@@ -31,6 +31,7 @@ public:
 
     int getNumVertex() const;
     std::vector<Vertex *> getVertexSet() const;
+
 protected:
     std::vector<Vertex *> vertexSet;    // vertex set
 
@@ -43,7 +44,5 @@ protected:
     int findVertexIdx(const int &id) const;
 };
 
-void deleteMatrix(int **m, int n);
-void deleteMatrix(double **m, int n);
 
 #endif //PROJETO_1_GRAPH_H
