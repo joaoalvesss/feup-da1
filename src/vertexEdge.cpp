@@ -64,10 +64,6 @@ bool Vertex::isVisited() const {
     return this->visited;
 }
 
-bool Vertex::isProcessing() const {
-    return this->processing;
-}
-
 unsigned int Vertex::getIndegree() const {
     return this->indegree;
 }
@@ -90,10 +86,6 @@ void Vertex::setId(int id) {
 
 void Vertex::setVisited(bool visited) {
     this->visited = visited;
-}
-
-void Vertex::setProcesssing(bool processing) {
-    this->processing = processing;
 }
 
 void Vertex::setIndegree(unsigned int indegree) {

@@ -20,7 +20,6 @@ public:
     int getId() const;
     std::vector<Edge *> getAdj() const;
     bool isVisited() const;
-    bool isProcessing() const;
     unsigned int getIndegree() const;
     double getDist() const;
     Edge *getPath() const;
@@ -28,7 +27,6 @@ public:
 
     void setId(int info);
     void setVisited(bool visited);
-    void setProcesssing(bool processing);
     void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setPath(Edge *path);
@@ -41,7 +39,6 @@ protected:
 
     // auxiliary fields
     bool visited = false; // used by DFS, BFS, Prim ...
-    bool processing = false; // used by isDAG (in addition to the visited attribute)
     unsigned int indegree; // used by topsort
     double dist = 0;
     Edge *path = nullptr;
