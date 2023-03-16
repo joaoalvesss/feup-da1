@@ -1,9 +1,10 @@
 #include <fstream>
 #include "../headers/utils.h"
 
-list<std::string> utils::file::readStations(const std::string& fileName, Graph &graph) {
+
+std::vector<std::string> utils::file::readStations(const std::string& fileName, Graph &graph) {
     ifstream openFile(fileName);
-    list<string> elements;
+    std::vector<string> elements;
     string line;
 
     if (!openFile.is_open()) return elements;
@@ -17,9 +18,9 @@ list<std::string> utils::file::readStations(const std::string& fileName, Graph &
     return elements;
 }
 
-list<std::string> utils::file::readNetwork(const std::string &fileName, Graph &graph) {
+std::vector<std::string> utils::file::readNetwork(const std::string &fileName, Graph &graph) {
     ifstream openFile(fileName);
-    list<string> elements;
+    std::vector<string> elements;
     string line;
 
     if (!openFile.is_open()) return elements;

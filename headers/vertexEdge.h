@@ -5,6 +5,7 @@
 #include <queue>
 #include <limits>
 #include <algorithm>
+#include <string>
 
 class Edge;
 
@@ -14,68 +15,62 @@ class Edge;
 
 class Vertex {
 public:
-    Vertex(int id);
-    bool operator<(Vertex & vertex) const; // // required by MutablePriorityQueue
+    Vertex(std::string name, std::string district, std::string municipality, std::string township, std::string line);
 
-    int getId() const;
     std::vector<Edge *> getAdj() const;
     bool isVisited() const;
-    unsigned int getIndegree() const;
     double getDist() const;
     Edge *getPath() const;
     std::vector<Edge *> getIncoming() const;
 
-    void setId(int info);
     void setVisited(bool visited);
-    void setIndegree(unsigned int indegree);
     void setDist(double dist);
     void setPath(Edge *path);
-    Edge * addEdge(Vertex *dest, double w);
-    bool removeEdge(int destID);
+    Edge * addEdge(Vertex *dest, double cap, std::string &type);
+    bool removeEdge(int destID); // TODO
 
 protected:
-    int id;                // identifier
-    std::vector<Edge *> adj;  // outgoing edges
+    std::string name;
+    std::string district;
+    std::string municipality;
+    std::string township;
+    std::string line;
+
+    // outgoing and coming edges
+    std::vector<Edge *> adj;
+    std::vector<Edge *> incoming;
 
     // auxiliary fields
-    bool visited = false; // used by DFS, BFS, Prim ...
-    unsigned int indegree; // used by topsort
+    bool visited = false;
     double dist = 0;
     Edge *path = nullptr;
 
-    std::vector<Edge *> incoming; // incoming edges
-
-    int queueIndex = 0; 		// required by MutablePriorityQueue and UFDS
 };
 
 /********************** Edge  ****************************/
 
 class Edge {
 public:
-    Edge(Vertex *orig, Vertex *dest, double w);
+    Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type);
 
     Vertex * getDest() const;
-    double getWeight() const;
-    bool isSelected() const;
+    double getCapacity() const;
     Vertex * getOrig() const;
     Edge *getReverse() const;
     double getFlow() const;
 
-    void setSelected(bool selected);
     void setReverse(Edge *reverse);
     void setFlow(double flow);
 protected:
-    Vertex * dest; // destination vertex
-    double weight; // edge weight, can also be used for capacity
-
-    // auxiliary fields
-    bool selected = false;
+    Vertex * dest;
+    double capacity;
+    std::string service_type;
 
     // used for bidirectional edges
     Vertex *orig;
     Edge *reverse = nullptr;
 
-    double flow; // for flow-related problems
+    double flow = 0;
 };
 
 #endif //PROJETO_1_VERTEXEDGE_H

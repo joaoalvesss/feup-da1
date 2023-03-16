@@ -1,26 +1,25 @@
+#include <utility>
+
 #include "../headers/vertexEdge.h"
 
-/************************* Vertex  **************************/
+    /*** Vertex - Stations ***/
 
-Vertex::Vertex(int id): id(id) {}
+Vertex::Vertex(std::string name, std::string district, std::string municipality, std::string township, std::string line){
+    this->name = std::move(name);
+    this->district = std::move(district);
+    this->municipality = std::move(municipality);
+    this->township = std::move(township);
+    this-> line = std::move(line);
+}
 
-/*
- * Auxiliary function to add an outgoing edge to a vertex (this),
- * with a given destination vertex (d) and edge weight (w).
- */
-Edge * Vertex::addEdge(Vertex *d, double w) {
-    auto newEdge = new Edge(this, d, w);
+Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type) {
+    auto newEdge = new Edge(this, dest, cap, type);
     adj.push_back(newEdge);
-    d->incoming.push_back(newEdge);
+    dest->incoming.push_back(newEdge);
     return newEdge;
 }
 
-/*
- * Auxiliary function to remove an outgoing edge (with a given destination (d))
- * from a vertex (this).
- * Returns true if successful, and false if such edge does not exist.
- */
-bool Vertex::removeEdge(int destID) {
+bool Vertex::removeEdge(int destID) { // TODO
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {
@@ -48,13 +47,6 @@ bool Vertex::removeEdge(int destID) {
     return removedEdge;
 }
 
-bool Vertex::operator<(Vertex & vertex) const {
-    return this->dist < vertex.dist;
-}
-
-int Vertex::getId() const {
-    return this->id;
-}
 
 std::vector<Edge*> Vertex::getAdj() const {
     return this->adj;
@@ -62,10 +54,6 @@ std::vector<Edge*> Vertex::getAdj() const {
 
 bool Vertex::isVisited() const {
     return this->visited;
-}
-
-unsigned int Vertex::getIndegree() const {
-    return this->indegree;
 }
 
 double Vertex::getDist() const {
@@ -80,16 +68,8 @@ std::vector<Edge *> Vertex::getIncoming() const {
     return this->incoming;
 }
 
-void Vertex::setId(int id) {
-    this->id = id;
-}
-
 void Vertex::setVisited(bool visited) {
     this->visited = visited;
-}
-
-void Vertex::setIndegree(unsigned int indegree) {
-    this->indegree = indegree;
 }
 
 void Vertex::setDist(double dist) {
@@ -100,40 +80,37 @@ void Vertex::setPath(Edge *path) {
     this->path = path;
 }
 
-/********************** Edge  ****************************/
+    /*** Edge - Network ***/
 
-Edge::Edge(Vertex *orig, Vertex *dest, double w): orig(orig), dest(dest), weight(w) {}
-
-Vertex * Edge::getDest() const {
-    return this->dest;
-}
-
-double Edge::getWeight() const {
-    return this->weight;
+Edge::Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type){
+    this->orig = orig;
+    this->dest = dest;
+    this->capacity = capacity;
+    this->service_type = service_type;
 }
 
 Vertex * Edge::getOrig() const {
     return this->orig;
 }
 
+Vertex * Edge::getDest() const {
+    return this->dest;
+}
+
+double Edge::getCapacity() const {
+    return this->capacity;
+}
+
 Edge *Edge::getReverse() const {
     return this->reverse;
 }
 
-bool Edge::isSelected() const {
-    return this->selected;
+void Edge::setReverse(Edge *reverse) {
+    this->reverse = reverse;
 }
 
 double Edge::getFlow() const {
     return flow;
-}
-
-void Edge::setSelected(bool selected) {
-    this->selected = selected;
-}
-
-void Edge::setReverse(Edge *reverse) {
-    this->reverse = reverse;
 }
 
 void Edge::setFlow(double flow) {

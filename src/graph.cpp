@@ -1,5 +1,8 @@
 #include "../headers/graph.h"
 
+Graph::Graph(){
+
+}
 int Graph::getNumVertex() const {
     return vertexSet.size();
 }
@@ -80,9 +83,4 @@ void deleteMatrix(double **m, int n) {
                 delete [] m[i];
         delete [] m;
     }
-}
-
-Graph::~Graph() {
-    deleteMatrix(distMatrix, vertexSet.size());
-    deleteMatrix(pathMatrix, vertexSet.size());
 }
