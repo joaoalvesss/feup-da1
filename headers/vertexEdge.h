@@ -15,32 +15,35 @@ class Edge;
 
 class Vertex {
 public:
-    Vertex(std::string name, std::string district, std::string municipality, std::string township, std::string line);
+    Vertex(int id, std::string name, std::string district, std::string municipality, std::string township, std::string line);
 
     std::vector<Edge *> getAdj() const;
     bool isVisited() const;
     double getDist() const;
     Edge *getPath() const;
     std::vector<Edge *> getIncoming() const;
-    std::string* getName() const;
-    std::string* getDistrict() const;
-    std::string* getMunicipality() const;
-    std::string* getTownship() const;
-    std::string* getLine() const;
+    std::string getName() const;
+    std::string getDistrict() const;
+    std::string getMunicipality() const;
+    std::string getTownship() const;
+    std::string getLine() const;
+    int getId() const;
 
-
+    void setId(int id);
     void setVisited(bool visited);
     void setDist(double dist);
     void setPath(Edge *path);
     Edge * addEdge(Vertex *dest, double cap, std::string &type);
-    bool removeEdge(int destID); // TODO
+    bool removeEdge(int destID);
 
 protected:
-    std::string* name;
-    std::string* district;
-    std::string* municipality;
-    std::string* township;
-    std::string* line;
+
+    int id;
+    std::string name;
+    std::string district;
+    std::string municipality;
+    std::string township;
+    std::string line;
 
     // outgoing and coming edges
     std::vector<Edge *> adj;

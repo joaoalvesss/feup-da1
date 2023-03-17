@@ -12,9 +12,9 @@ class Graph {
 public:
     Graph();
     Vertex *findVertex(const int &id) const;
-    bool addVertex(const int &id);
+    bool addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line);
 
-    bool addEdge(const int &sourc, const int &dest, double w);
+    bool addEdge(const int &sourc, const int &dest, double capacity, std::string service_type);
     bool addBidirectionalEdge(const int &sourc, const int &dest, double w);
 
     int getNumVertex() const;

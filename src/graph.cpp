@@ -3,8 +3,9 @@
 Graph::Graph(){
 
 }
+
 int Graph::getNumVertex() const {
-    return vertexSet.size();
+    return (int)vertexSet.size();
 }
 
 std::vector<Vertex *> Graph::getVertexSet() const {
@@ -34,10 +35,11 @@ int Graph::findVertexIdx(const int &id) const {
  *  Adds a vertex with a given content or info (in) to a graph (this).
  *  Returns true if successful, and false if a vertex with that content already exists.
  */
-bool Graph::addVertex(const int &id) {
+bool Graph::addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line) { // TODO
     if (findVertex(id) != nullptr)
         return false;
-    vertexSet.push_back(new Vertex(id));
+    Vertex v(id, name, district, municipality, township, line);
+    vertexSet.push_back(*v);
     return true;
 }
 
@@ -46,16 +48,16 @@ bool Graph::addVertex(const int &id) {
  * destination vertices and the edge weight (w).
  * Returns true if successful, and false if the source or destination vertex does not exist.
  */
-bool Graph::addEdge(const int &sourc, const int &dest, double w) {
+bool Graph::addEdge(const int &sourc, const int &dest, double capacity, std::string service_type) { // TODO
     auto v1 = findVertex(sourc);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-    v1->addEdge(v2, w);
+    v1->addEdge(v2, capacity, service_type);
     return true;
 }
 
-bool Graph::addBidirectionalEdge(const int &sourc, const int &dest, double w) {
+bool Graph::addBidirectionalEdge(const int &sourc, const int &dest, double w) { // TODO
     auto v1 = findVertex(sourc);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
@@ -67,20 +69,4 @@ bool Graph::addBidirectionalEdge(const int &sourc, const int &dest, double w) {
     return true;
 }
 
-void deleteMatrix(int **m, int n) {
-    if (m != nullptr) {
-        for (int i = 0; i < n; i++)
-            if (m[i] != nullptr)
-                delete [] m[i];
-        delete [] m;
-    }
-}
-
-void deleteMatrix(double **m, int n) {
-    if (m != nullptr) {
-        for (int i = 0; i < n; i++)
-            if (m[i] != nullptr)
-                delete [] m[i];
-        delete [] m;
-    }
 }

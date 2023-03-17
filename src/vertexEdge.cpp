@@ -4,12 +4,13 @@
 
     /*** Vertex - Stations ***/
 
-Vertex::Vertex(std::string name, std::string district, std::string municipality, std::string township, std::string line){
-    this->name = &name;
-    this->district = &district;
-    this->municipality = &municipality;
-    this->township = &township;
-    this-> line = &line;
+Vertex::Vertex(int id, std::string name, std::string district, std::string municipality, std::string township, std::string line){
+    this->id = id;
+    this->name = std::move(name);
+    this->district = std::move(district);
+    this->municipality = std::move(municipality);
+    this->township = std::move(township);
+    this-> line = std::move(line);
 }
 
 Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type) {
@@ -46,23 +47,23 @@ bool Vertex::removeEdge(int destID) { // TODO
     }
     return removedEdge;
 }
-std::string* Vertex::getName() const{
+std::string Vertex::getName() const{
     return this->name;
 }
 
-std::string* Vertex::getMunicipality() const {
+std::string Vertex::getMunicipality() const {
     return this->municipality;
 }
 
-std::string* Vertex::getDistrict() const {
+std::string Vertex::getDistrict() const {
     return this->district;
 }
 
-std::string* Vertex::getTownship() const {
+std::string Vertex::getTownship() const {
     return this->township;
 }
 
-std::string* Vertex::getLine() const{
+std::string Vertex::getLine() const{
     return this->line;
 }
 
@@ -96,6 +97,14 @@ void Vertex::setDist(double dist) {
 
 void Vertex::setPath(Edge *path) {
     this->path = path;
+}
+
+int Vertex::getId() const{
+    return id;
+}
+
+void Vertex::setId(int id){
+    this->id = id;
 }
 
     /*** Edge - Network ***/
