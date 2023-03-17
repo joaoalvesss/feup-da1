@@ -5,11 +5,11 @@
     /*** Vertex - Stations ***/
 
 Vertex::Vertex(std::string name, std::string district, std::string municipality, std::string township, std::string line){
-    this->name = std::move(name);
-    this->district = std::move(district);
-    this->municipality = std::move(municipality);
-    this->township = std::move(township);
-    this-> line = std::move(line);
+    this->name = &name;
+    this->district = &district;
+    this->municipality = &municipality;
+    this->township = &township;
+    this-> line = &line;
 }
 
 Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type) {
@@ -46,7 +46,25 @@ bool Vertex::removeEdge(int destID) { // TODO
     }
     return removedEdge;
 }
+std::string* Vertex::getName() const{
+    return this->name;
+}
 
+std::string* Vertex::getMunicipality() const {
+    return this->municipality;
+}
+
+std::string* Vertex::getDistrict() const {
+    return this->district;
+}
+
+std::string* Vertex::getTownship() const {
+    return this->township;
+}
+
+std::string* Vertex::getLine() const{
+    return this->line;
+}
 
 std::vector<Edge*> Vertex::getAdj() const {
     return this->adj;
@@ -86,7 +104,7 @@ Edge::Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_typ
     this->orig = orig;
     this->dest = dest;
     this->capacity = capacity;
-    this->service_type = service_type;
+    this->service_type = &service_type;
 }
 
 Vertex * Edge::getOrig() const {
@@ -99,6 +117,10 @@ Vertex * Edge::getDest() const {
 
 double Edge::getCapacity() const {
     return this->capacity;
+}
+
+std::string* Edge::getServiceType() const{
+    return this->service_type;
 }
 
 Edge *Edge::getReverse() const {

@@ -11,7 +11,7 @@ class Edge;
 
 #define INF std::numeric_limits<double>::max()
 
-/************************* Vertex  **************************/
+    /*** Vertex - Stations ***/
 
 class Vertex {
 public:
@@ -22,6 +22,12 @@ public:
     double getDist() const;
     Edge *getPath() const;
     std::vector<Edge *> getIncoming() const;
+    std::string* getName() const;
+    std::string* getDistrict() const;
+    std::string* getMunicipality() const;
+    std::string* getTownship() const;
+    std::string* getLine() const;
+
 
     void setVisited(bool visited);
     void setDist(double dist);
@@ -30,11 +36,11 @@ public:
     bool removeEdge(int destID); // TODO
 
 protected:
-    std::string name;
-    std::string district;
-    std::string municipality;
-    std::string township;
-    std::string line;
+    std::string* name;
+    std::string* district;
+    std::string* municipality;
+    std::string* township;
+    std::string* line;
 
     // outgoing and coming edges
     std::vector<Edge *> adj;
@@ -45,9 +51,10 @@ protected:
     double dist = 0;
     Edge *path = nullptr;
 
+    std::string *getServiceType() const;
 };
 
-/********************** Edge  ****************************/
+    /*** Edge - Network ***/
 
 class Edge {
 public:
@@ -58,13 +65,14 @@ public:
     Vertex * getOrig() const;
     Edge *getReverse() const;
     double getFlow() const;
+    std::string* getServiceType() const;
 
     void setReverse(Edge *reverse);
     void setFlow(double flow);
 protected:
     Vertex * dest;
     double capacity;
-    std::string service_type;
+    std::string* service_type;
 
     // used for bidirectional edges
     Vertex *orig;
