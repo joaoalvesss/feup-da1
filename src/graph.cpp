@@ -1,8 +1,7 @@
 #include "../headers/graph.h"
+#include "../headers/utils.h"
 
-Graph::Graph(){
-
-}
+Graph::Graph(){}
 
 int Graph::getNumVertex() const {
     return (int)vertexSet.size();
@@ -15,9 +14,9 @@ std::vector<Vertex *> Graph::getVertexSet() const {
 /*
  * Auxiliary function to find a vertex with a given content.
  */
-Vertex * Graph::findVertex(const int &id) const {
+Vertex * Graph::findVertex(const std::string &id) const {
     for (auto v : vertexSet)
-        if (v->getId() == id)
+        if (v->getName() == id)
             return v;
     return nullptr;
 }
@@ -28,7 +27,7 @@ Vertex * Graph::findVertex(const int &id) const {
 int Graph::findVertexIdx(const int &id) const {
     for (unsigned i = 0; i < vertexSet.size(); i++)
         if (vertexSet[i]->getId() == id)
-            return i;
+            return (int)i;
     return -1;
 }
 /*
@@ -36,10 +35,10 @@ int Graph::findVertexIdx(const int &id) const {
  *  Returns true if successful, and false if a vertex with that content already exists.
  */
 bool Graph::addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line) { // TODO
-    if (findVertex(id) != nullptr)
+    if (findVertex(name) != nullptr)
         return false;
-    Vertex v(id, name, district, municipality, township, line);
-    vertexSet.push_back(*v);
+    auto * v = new Vertex(id, name, district, municipality, township, line);
+    vertexSet.push_back(v);
     return true;
 }
 
@@ -48,8 +47,8 @@ bool Graph::addVertex(const int &id, const std::string &name, const std::string 
  * destination vertices and the edge weight (w).
  * Returns true if successful, and false if the source or destination vertex does not exist.
  */
-bool Graph::addEdge(const int &sourc, const int &dest, double capacity, std::string service_type) { // TODO
-    auto v1 = findVertex(sourc);
+bool Graph::addEdge(const std::string &source, const std::string &dest, double capacity, std::string service_type) {
+    auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
@@ -57,16 +56,20 @@ bool Graph::addEdge(const int &sourc, const int &dest, double capacity, std::str
     return true;
 }
 
-bool Graph::addBidirectionalEdge(const int &sourc, const int &dest, double w) { // TODO
-    auto v1 = findVertex(sourc);
+bool Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double w, std::string &service_type) {
+    auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
     if (v1 == nullptr || v2 == nullptr)
         return false;
-    auto e1 = v1->addEdge(v2, w);
-    auto e2 = v2->addEdge(v1, w);
+    auto e1 = v1->addEdge(v2, w, service_type);
+    auto e2 = v2->addEdge(v1, w, service_type);
     e1->setReverse(e2);
     e2->setReverse(e1);
     return true;
 }
 
+void Graph::resetVisits() {
+    for(Vertex* v: vertexSet){
+        (*v).setVisited(false);
+    }
 }

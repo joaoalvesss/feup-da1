@@ -2,14 +2,16 @@
 #define PROJETO_1_UTILS_H
 
 #include <string>
-#include <list>
-#include "../headers/graph.h"
-#include "../headers/vertexEdge.h"
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include "graph.h"
+#include "vertexEdge.h"
 
 using namespace std;
 
-namespace utils::file {
-        std::vector<std::string> readStations(const std::string &fileName, Graph &graph);
-        std::vector<std::string> readNetwork(const std::string &fileName, Graph &graph);
+namespace utils{
+        void readCsvData(Graph &graph);
+        void clearOnENTER();
 }
 #endif //PROJETO_1_UTILS_H

@@ -11,14 +11,15 @@
 class Graph {
 public:
     Graph();
-    Vertex *findVertex(const int &id) const;
+    Vertex *findVertex(const std::string &id) const;
     bool addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line);
 
-    bool addEdge(const int &sourc, const int &dest, double capacity, std::string service_type);
-    bool addBidirectionalEdge(const int &sourc, const int &dest, double w);
+    bool addEdge(const std::string &source, const std::string &dest, double capacity, std::string service_type);
+    bool addBidirectionalEdge(const std::string &source, const std::string &dest, double w, std::string &service_type);
 
     int getNumVertex() const;
     std::vector<Vertex *> getVertexSet() const;
+    void resetVisits();
 
 protected:
     std::vector<Vertex *> vertexSet;    // vertex set

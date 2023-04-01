@@ -1,35 +1,51 @@
 #include <fstream>
 #include "../headers/utils.h"
 
+void utils::readCsvData(Graph &graph){
+    std::ifstream stations("../resources/stations.csv");
+    std::ifstream networks("../resources/network.csv");
 
-std::vector<std::string> utils::file::readStations(const std::string& fileName, Graph &graph) {
-    ifstream openFile(fileName);
-    std::vector<string> elements;
-    string line;
+    std::string line;
+    int station_id = 0;
 
-    if (!openFile.is_open()) return elements;
+    getline(stations, line); // discard first line
+    getline(networks, line); // discard first line
 
-    openFile.ignore(500, '\n');
-    int id = 0;
-    while(getline(openFile, line)) {
-        id++;
-        graph.addVertex(id);
+    while (getline(stations, line)) {
+        std::stringstream ss(line);
+        std::string name, district, municipality, township, train_line;
+
+        getline(ss, name, ',');
+        getline(ss, district, ',');
+        getline(ss, municipality, ',');
+        getline(ss, township, ',');
+        getline(ss, line, '\n');
+
+        if(!graph.addVertex(station_id, name, district, municipality, township, train_line)){
+            std::cout << "Error inserting vertex with id: " << station_id << "\n";
+            return;
+        }
+        station_id++;
     }
-    return elements;
+
+    while (getline(networks, line)) {
+        std::stringstream ss(line);
+
+        std::string station_a, station_b, capacity_string, service;
+
+        getline(ss, station_a, ',');
+        getline(ss, station_b, ',');
+        getline(ss, capacity_string, ',');
+        getline(ss, service, '\n');
+
+        if(!graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service)){
+            std::cout << "Error inserting edge from: " << station_a << "to " << station_b << "\n";
+        }
+    }
 }
 
-std::vector<std::string> utils::file::readNetwork(const std::string &fileName, Graph &graph) {
-    ifstream openFile(fileName);
-    std::vector<string> elements;
-    string line;
-
-    if (!openFile.is_open()) return elements;
-
-    openFile.ignore(500, '\n');
-    int id = 0;
-    while(getline(openFile, line)) {
-        id++;
-        graph.addEdge(id);
-    }
-    return elements;
+void utils::clearOnENTER(){ // Does this work correctly?
+    std::cout << "\nPress <Enter> to continue";
+    while(std::cin.get() != '\n');
+    std::cout << "\\033[2J\\033[1;1H";
 }
