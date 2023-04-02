@@ -56,7 +56,8 @@
 				1,
 				4,
 				6,
-				8
+				8,
+				9
 			]
 		}
 	],
@@ -97,7 +98,8 @@
 				1,
 				4,
 				6,
-				8
+				8,
+				9
 			]
 		},
 		{
@@ -107,7 +109,8 @@
 				2,
 				3,
 				5,
-				7
+				7,
+				10
 			]
 		}
 	],
@@ -162,6 +165,17 @@
 			"compileGroupIndex" : 0,
 			"path" : "src/menu.cpp",
 			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/manager.cpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "headers/manager.h",
+			"sourceGroupIndex" : 1
 		}
 	],
 	"type" : "EXECUTABLE"

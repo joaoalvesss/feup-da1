@@ -73,3 +73,65 @@ void Graph::resetVisits() {
         (*v).setVisited(false);
     }
 }
+
+void Graph::resetFlows(){
+    for(Vertex* v: vertexSet){
+        for(Edge* e: v->getAdj()){
+            e->setFlow(0);
+        }
+    }
+}
+
+int Graph::edmondsKarp(const std::string &source, const std::string &dest){ // O(V^2 * E^2)
+    Vertex *s = findVertex(source);
+    Vertex *t = findVertex(dest);
+
+    if (s == nullptr || t == nullptr) { return 0; }
+
+    resetFlows();
+    int maxFlow = 0;
+
+    while (findAugmentingPath(s, t)) {
+        double minCapacity = std::numeric_limits<double>::infinity();
+
+        for (Vertex *v = t; v != s; v = v->getPath()->getOrig()) {
+            double residualCapacity = v->getPath()->getReverse()->getCapacity() - v->getPath()->getReverse()->getFlow();
+            minCapacity = std::min(minCapacity, residualCapacity);
+        }
+
+        for (Vertex *v = t; v != s; v = v->getPath()->getOrig()) {
+            v->getPath()->setFlow(v->getPath()->getFlow() + minCapacity);
+            v->getPath()->getReverse()->setFlow(v->getPath()->getReverse()->getFlow() - minCapacity);
+        }
+
+        maxFlow += (int)minCapacity;
+    }
+    return maxFlow;
+}
+
+bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){ // O(V + E)
+    for (Vertex *v : vertexSet) {
+        v->setVisited(false);
+        v->setPath(nullptr);
+    }
+
+    std::queue<Vertex *> q;
+    q.push(source);
+    source->setVisited(true);
+
+    while (!q.empty()) {
+        Vertex *v = q.front();
+        q.pop();
+        for (Edge *e : v->getAdj()) {
+            Vertex *w = e->getDest();
+            double residualCapacity = e->getCapacity() - e->getFlow();
+            if (!w->isVisited() && residualCapacity > 0) {
+                w->setVisited(true);
+                w->setPath(e);
+                q.push(w);
+            }
+        }
+    }
+
+    return (dest->getPath() != nullptr);
+}

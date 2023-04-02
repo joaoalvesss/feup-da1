@@ -20,7 +20,10 @@ public:
     int getNumVertex() const;
     std::vector<Vertex *> getVertexSet() const;
     void resetVisits();
+    void resetFlows();
 
+    int edmondsKarp(const std::string &source, const std::string &dest);
+    bool findAugmentingPath(Vertex * source, Vertex * dest);
 protected:
     std::vector<Vertex *> vertexSet;    // vertex set
     int findVertexIdx(const int &id) const;

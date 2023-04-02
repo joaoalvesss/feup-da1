@@ -1,5 +1,7 @@
 #include <fstream>
 #include "../headers/utils.h"
+#include <iostream>
+#include <cstdlib>
 
 void utils::readCsvData(Graph &graph){
     std::ifstream stations("../resources/stations.csv");
@@ -38,14 +40,14 @@ void utils::readCsvData(Graph &graph){
         getline(ss, capacity_string, ',');
         getline(ss, service, '\n');
 
-        if(!graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service)){
+        if(!graph.addEdge(station_a, station_b, std::stod(capacity_string), service)){
             std::cout << "Error inserting edge from: " << station_a << "to " << station_b << "\n";
         }
     }
 }
 
-void utils::clearOnENTER(){ // Does this work correctly?
+void utils::continueOnENTER(){ // Does this work correctly?
     std::cout << "\nPress <Enter> to continue";
     while(std::cin.get() != '\n');
-    std::cout << "\\033[2J\\033[1;1H";
+    std::cout << "\n\n";
 }

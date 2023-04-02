@@ -12,6 +12,6 @@ using namespace std;
 
 namespace utils{
         void readCsvData(Graph &graph);
-        void clearOnENTER();
+        void continueOnENTER();
 }
 #endif //PROJETO_1_UTILS_H
