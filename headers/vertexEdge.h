@@ -54,7 +54,7 @@ protected:
     double dist = 0;
     Edge *path = nullptr;
 
-    std::string *getServiceType() const;
+
 };
 
     /*** Edge - Network ***/

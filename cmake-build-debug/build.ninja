@@ -79,12 +79,6 @@ build CMakeFiles/Projeto_1.dir/src/menu.cpp.obj: CXX_COMPILER__Projeto_1_Debug C
   OBJECT_DIR = CMakeFiles\Projeto_1.dir
   OBJECT_FILE_DIR = CMakeFiles\Projeto_1.dir\src
 
-build CMakeFiles/Projeto_1.dir/src/manager.cpp.obj: CXX_COMPILER__Projeto_1_Debug C$:/DA/Projeto$ 1/src/manager.cpp || cmake_object_order_depends_target_Projeto_1
-  DEP_FILE = CMakeFiles\Projeto_1.dir\src\manager.cpp.obj.d
-  FLAGS = -g
-  OBJECT_DIR = CMakeFiles\Projeto_1.dir
-  OBJECT_FILE_DIR = CMakeFiles\Projeto_1.dir\src
-
 
 # =============================================================================
 # Link build statements for EXECUTABLE target Projeto_1
@@ -93,7 +87,7 @@ build CMakeFiles/Projeto_1.dir/src/manager.cpp.obj: CXX_COMPILER__Projeto_1_Debu
 #############################################
 # Link the executable Projeto_1.exe
 
-build Projeto_1.exe: CXX_EXECUTABLE_LINKER__Projeto_1_Debug CMakeFiles/Projeto_1.dir/main.cpp.obj CMakeFiles/Projeto_1.dir/src/utils.cpp.obj CMakeFiles/Projeto_1.dir/src/graph.cpp.obj CMakeFiles/Projeto_1.dir/src/vertexEdge.cpp.obj CMakeFiles/Projeto_1.dir/src/menu.cpp.obj CMakeFiles/Projeto_1.dir/src/manager.cpp.obj
+build Projeto_1.exe: CXX_EXECUTABLE_LINKER__Projeto_1_Debug CMakeFiles/Projeto_1.dir/main.cpp.obj CMakeFiles/Projeto_1.dir/src/utils.cpp.obj CMakeFiles/Projeto_1.dir/src/graph.cpp.obj CMakeFiles/Projeto_1.dir/src/vertexEdge.cpp.obj CMakeFiles/Projeto_1.dir/src/menu.cpp.obj
   FLAGS = -g
   LINK_LIBRARIES = -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\Projeto_1.dir

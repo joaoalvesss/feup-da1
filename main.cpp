@@ -1,10 +1,7 @@
-#include <iostream>
-#include "headers/manager.h"
-#include "headers/utils.h"
-
+#include "headers/menu.h"
 
 int main() {
-    std::cout << "Hello, World!" << std::endl;
-    utils::continueOnENTER();
+    Menu menu;
+    Menu::init();
     return 0;
 }

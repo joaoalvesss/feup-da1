@@ -1,7 +1,42 @@
 #include <fstream>
 #include "../headers/utils.h"
-#include <iostream>
-#include <cstdlib>
+
+std::string utils::replaceAll(std::string str, const std::string& from, const std::string& to) {
+    size_t start_pos = 0;
+    while((start_pos = str.find(from, start_pos)) != std::string::npos) {
+        str.replace(start_pos, from.length(), to);
+        start_pos += to.length();
+    }
+    return str;
+}
+
+std::string utils::replaceAccents(std::string s) {
+    s = replaceAll(s, "ã", "a");
+    s = replaceAll(s, "á", "a");
+    s = replaceAll(s, "à", "a");
+    s = replaceAll(s, "â", "a");
+    s = replaceAll(s, "é", "e");
+    s = replaceAll(s, "ê", "e");
+    s = replaceAll(s, "í", "i");
+    s = replaceAll(s, "ó", "o");
+    s = replaceAll(s, "õ", "o");
+    s = replaceAll(s, "ô", "o");
+    s = replaceAll(s, "ú", "u");
+
+    s = replaceAll(s, "Ã", "A");
+    s = replaceAll(s, "Á", "A");
+    s = replaceAll(s, "À", "A");
+    s = replaceAll(s, "Â", "A");
+    s = replaceAll(s, "É", "E");
+    s = replaceAll(s, "Ê", "E");
+    s = replaceAll(s, "Í", "I");
+    s = replaceAll(s, "Ó", "O");
+    s = replaceAll(s, "Õ", "O");
+    s = replaceAll(s, "Ô", "O");
+    s = replaceAll(s, "Ú", "U");
+    return s;
+}
+
 
 void utils::readCsvData(Graph &graph){
     std::ifstream stations("../resources/stations.csv");
@@ -23,10 +58,17 @@ void utils::readCsvData(Graph &graph){
         getline(ss, township, ',');
         getline(ss, line, '\n');
 
-        if(!graph.addVertex(station_id, name, district, municipality, township, train_line)){
-            std::cout << "Error inserting vertex with id: " << station_id << "\n";
-            return;
+        if(line == "Rede Espanhola"){
+            graph.addVertex(station_id, name, "", "", "", train_line);
+            continue;
         }
+
+        replaceAccents(name);
+        replaceAccents(district);
+        replaceAccents(municipality);
+        replaceAccents(township);
+
+        graph.addVertex(station_id, name, district, municipality, township, train_line);
         station_id++;
     }
 
@@ -40,13 +82,11 @@ void utils::readCsvData(Graph &graph){
         getline(ss, capacity_string, ',');
         getline(ss, service, '\n');
 
-        if(!graph.addEdge(station_a, station_b, std::stod(capacity_string), service)){
-            std::cout << "Error inserting edge from: " << station_a << "to " << station_b << "\n";
-        }
+        graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service);
     }
 }
 
-void utils::continueOnENTER(){ // Does this work correctly?
+void utils::continueOnENTER(){
     std::cout << "\nPress <Enter> to continue";
     while(std::cin.get() != '\n');
     std::cout << "\n\n";

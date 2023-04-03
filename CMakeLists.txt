@@ -3,4 +3,4 @@ project(Projeto_1)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_executable(Projeto_1 main.cpp src/utils.cpp headers/utils.h headers/graph.h src/graph.cpp headers/vertexEdge.h src/vertexEdge.cpp headers/menu.h src/menu.cpp src/manager.cpp headers/manager.h)
+add_executable(Projeto_1 main.cpp src/utils.cpp headers/utils.h headers/graph.h src/graph.cpp headers/vertexEdge.h src/vertexEdge.cpp headers/menu.h src/menu.cpp)
