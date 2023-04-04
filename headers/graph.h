@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <map>
 #include <list>
-
+#include <unordered_map>
 #include "VertexEdge.h"
 
 struct StringInt {
@@ -35,7 +35,7 @@ public:
 
     int edmondsKarp(const std::string &source, const std::string &dest); // 2.1 topic
     bool findAugmentingPath(Vertex * source, Vertex * dest); // 2.1 topic
-    std::map<std::pair<std::string, std::string>, int> findMostTrainsRequired(); // 2.2 topic
+    std::vector<std::pair<std::pair<std::string, std::string>, int>> findMostTrainsRequired(); // 2.2 topic
     std::vector<StringInt> topKPlaces(int k, bool district);
 
     int findMaxStationTrains(const std::string &station); // 2.4 topic

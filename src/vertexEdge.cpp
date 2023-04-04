@@ -20,7 +20,7 @@ Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type) {
     return newEdge;
 }
 
-bool Vertex::removeEdge(int destID) { // TODO
+bool Vertex::removeEdge(int destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     while (it != adj.end()) {

@@ -145,24 +145,31 @@ bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){ // O(V + E)
     return (dest->getPath() != nullptr);
 }
 
-std::map<std::pair<std::string, std::string>, int> Graph::findMostTrainsRequired(){ // O(V^4 * E^2)
-    int most_trains_required = 0, trains_num;
-    std::map<std::pair<std::string, std::string>, int> stations;
+std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // O(V^4 * E^2)
+    int most_trains_required = 0;
+    int trains_num = -1;
+    std::vector<std::pair<std::pair<std::string, std::string>, int>> stations;
+    std::unordered_map<std::string, int> aux;
 
     for (int i = 0; i < vertexSet.size(); i++) {
         for (int j = i; j < vertexSet.size(); j++) {
-            Vertex* const dest = vertexSet[i];
-            Vertex* const source = vertexSet[j];
-            if (dest != source) {
-                trains_num = edmondsKarp(source->getName(), dest->getName());
-                if (most_trains_required < trains_num) {
-                    stations.clear();
-                    stations[std::make_pair(source->getName(), dest->getName())] = trains_num;
-                    most_trains_required = trains_num;
-                }
-                else if (most_trains_required == trains_num) {
-                    stations[std::make_pair(source->getName(), dest->getName())] = trains_num;
-                }
+            std::string const dest = vertexSet[i]->getName();
+            std::string const source = vertexSet[j]->getName();
+
+            if (aux.find(source + dest) != aux.end()) {
+                trains_num = aux[source + dest];
+            } else {
+                trains_num = edmondsKarp(source, dest);
+                aux[source + dest] = trains_num;
+                aux[dest + source] = trains_num;
+            }
+
+            if (trains_num > most_trains_required) {
+                stations.clear();
+                stations.emplace_back(std::make_pair(source, dest), trains_num);
+                most_trains_required = trains_num;
+            } else if (trains_num == most_trains_required) {
+                stations.emplace_back(std::make_pair(source, dest), trains_num);
             }
         }
     }

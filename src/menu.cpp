@@ -48,7 +48,7 @@ void Menu::init() {
             case 2:
             {
                 int aux;
-                std::map<pair<std::string, std::string>, int> value = graph.findMostTrainsRequired();
+                std::vector<pair<pair<std::string, std::string>, int>> value = graph.findMostTrainsRequired();
                 for(const auto &pair : value){
                     cout << "{" << pair.first.first << "->" << pair.first.second << "}\n";
                     aux = pair.second;
@@ -61,19 +61,20 @@ void Menu::init() {
                 std::string answer;
                 bool district;
                 int k;
-
+                /*
                 cout << "Want to see districts? Enter exactly yes or no:";
                 std::cin >> std::ws;
                 std::getline(std::cin, answer);
 
+
                 if(answer == "yes") district = true;
                 else district = false;
-
+                */
                 cout << "\n How many do you want to see?";
                 std::cin >> k;
 
-                for(const auto &value : graph.topKPlaces(k, district)){
-                    cout << value.i << " - " << value.s << "\n";
+                for(const auto &value : graph.topKPlaces(k)){
+                    cout << value.first.first << " - " << value.first.second << " - " << value.second << "\n";
                 }
             }
                 break;
