@@ -63,10 +63,10 @@ void utils::readCsvData(Graph &graph){
             continue;
         }
 
-        replaceAccents(name);
-        replaceAccents(district);
-        replaceAccents(municipality);
-        replaceAccents(township);
+        //replaceAccents(name);
+        // replaceAccents(district);
+        //replaceAccents(municipality);
+        //replaceAccents(township);
 
         graph.addVertex(station_id, name, district, municipality, township, train_line);
         station_id++;
@@ -81,7 +81,9 @@ void utils::readCsvData(Graph &graph){
         getline(ss, station_b, ',');
         getline(ss, capacity_string, ',');
         getline(ss, service, '\n');
-
+        std::string standard = "STANDARD";
+        int weight = 4;
+        if (service == standard) weight = 2;
         graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service);
     }
 }

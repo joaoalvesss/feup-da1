@@ -24,9 +24,10 @@ public:
     Graph();
     Vertex *findVertex(const std::string &id) const;
     void addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line);
+    bool removeVertex(const int &id);
 
-    void addEdge(const std::string &source, const std::string &dest, double capacity, std::string service_type);
-    void addBidirectionalEdge(const std::string &source, const std::string &dest, double w, std::string &service_type);
+    void addEdge(const std::string &source, const std::string &dest, double capacity, std::string service_type, int weight);
+    void addBidirectionalEdge(const std::string &source, const std::string &dest, double w, std::string &service_type, int weight);
 
     int getNumVertex() const;
     std::vector<Vertex *> getVertexSet() const;
@@ -39,6 +40,11 @@ public:
     std::vector<StringInt> topKPlaces(int k, bool district);
 
     int findMaxStationTrains(const std::string &station); // 2.4 topic
+
+    int maxTrainsMinCost(const std::string &src, const std::string &tgt); // 3.1 topic
+    std::vector<Vertex*> dijkstraShortestPath(const std::string &startId, const std::string &endId);
+
+    int reducedConnectivity(const std::string &source, const std::string &dest); // 4.1 topic
 protected:
 
     std::vector<Vertex *> vertexSet;    // vertex set

@@ -13,8 +13,8 @@ Vertex::Vertex(int id, std::string name, std::string district, std::string munic
     this-> line = std::move(line);
 }
 
-Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type) {
-    auto newEdge = new Edge(this, dest, cap, type);
+Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type, int weight) {
+    auto newEdge = new Edge(this, dest, cap, type, weight);
     adj.push_back(newEdge);
     dest->incoming.push_back(newEdge);
     return newEdge;
@@ -47,6 +47,7 @@ bool Vertex::removeEdge(int destID) {
     }
     return removedEdge;
 }
+
 std::string Vertex::getName() const{
     return this->name;
 }
@@ -109,11 +110,12 @@ void Vertex::setId(int id){
 
     /*** Edge - Network ***/
 
-Edge::Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type){
+Edge::Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type, int weight){
     this->orig = orig;
     this->dest = dest;
     this->capacity = capacity;
     this->service_type = &service_type;
+    this->weight = weight;
 }
 
 Vertex * Edge::getOrig() const {
@@ -146,4 +148,8 @@ double Edge::getFlow() const {
 
 void Edge::setFlow(double flow) {
     this->flow = flow;
+}
+
+int Edge::getWeight() const {
+    return weight;
 }

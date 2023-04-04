@@ -37,7 +37,7 @@ void Menu::init() {
                 int train_num = graph.edmondsKarp(src, dest);
 
                 if(train_num == -1){
-                    std::cout << "Insert valid stations!";
+                    std::cout << "Insert valid stations! " << src << " " << dest;
                 } else if(train_num == -2){
                     std::cout << "There's no connection between the stations";
                 } else{
@@ -61,7 +61,7 @@ void Menu::init() {
                 std::string answer;
                 bool district;
                 int k;
-                /*
+
                 cout << "Want to see districts? Enter exactly yes or no:";
                 std::cin >> std::ws;
                 std::getline(std::cin, answer);
@@ -69,12 +69,12 @@ void Menu::init() {
 
                 if(answer == "yes") district = true;
                 else district = false;
-                */
+
                 cout << "\n How many do you want to see?";
                 std::cin >> k;
 
-                for(const auto &value : graph.topKPlaces(k)){
-                    cout << value.first.first << " - " << value.first.second << " - " << value.second << "\n";
+                for(const auto &value : graph.topKPlaces(k, district)){
+                    cout << value.s << " - " << value.i << "\n";
                 }
             }
                 break;
@@ -92,7 +92,22 @@ void Menu::init() {
             }
 
             case 5:
+            {
+                std::string src;
+
+                std::cout << "Enter the src: ";
+                std::cin >> std::ws;
+                std::getline(std::cin, src);
+
+                std::string tgt;
+
+                std::cout << "Enter the dest: ";
+                std::cin >> std::ws;
+                std::getline(std::cin, tgt);
+
+                cout << "Max flow from " << src << " to " << tgt << " costs " << graph.maxTrainsMinCost(src, tgt);
                 break;
+            }
 
             case 6:
                 break;

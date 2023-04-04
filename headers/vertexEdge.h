@@ -33,7 +33,7 @@ public:
     void setVisited(bool visited);
     void setDist(double dist);
     void setPath(Edge *path);
-    Edge * addEdge(Vertex *dest, double cap, std::string &type);
+    Edge *addEdge(Vertex *dest, double cap, std::string &type, int weight);
     bool removeEdge(int destID);
 
 protected:
@@ -61,7 +61,7 @@ protected:
 
 class Edge {
 public:
-    Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type);
+    Edge(Vertex *orig, Vertex *dest, double capacity, std::string &service_type, int weight);
 
     Vertex * getDest() const;
     double getCapacity() const;
@@ -69,6 +69,7 @@ public:
     Edge *getReverse() const;
     double getFlow() const;
     std::string* getServiceType() const;
+    int getWeight() const;
 
     void setReverse(Edge *reverse);
     void setFlow(double flow);
@@ -76,6 +77,7 @@ protected:
     Vertex * dest;
     double capacity;
     std::string* service_type;
+    int weight;
 
     // used for bidirectional edges
     Vertex *orig;
