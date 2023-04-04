@@ -84,7 +84,7 @@ void utils::readCsvData(Graph &graph){
         std::string standard = "STANDARD";
         int weight = 4;
         if (service == standard) weight = 2;
-        graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service);
+        graph.addBidirectionalEdge(station_a, station_b, std::stod(capacity_string), service, weight);
     }
 }
 

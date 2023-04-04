@@ -105,7 +105,8 @@ void Menu::init() {
                 std::cin >> std::ws;
                 std::getline(std::cin, tgt);
 
-                cout << "Max flow from " << src << " to " << tgt << " costs " << graph.maxTrainsMinCost(src, tgt);
+                std::pair<double,double> aux = graph.maxTrainsMinCost(src, tgt);
+                cout << "Max flow from " << src << " to " << tgt << " costs " << aux.first << " with flow " << aux.second;
                 break;
             }
 
@@ -135,8 +136,8 @@ int Menu::showMenu() {
     std::cout << "-------------------------- MAIN MENU ---------------------------\n";
     std::cout << "[0] Quit\n";
     std::cout << "[1] Maximum number of trains that can travel between two stations\n";
-    std::cout << "[2] Pairs of stations that require the most trains\n";
-    std::cout << "[3] Top K Places\n";
+    std::cout << "[2] Pairs of stations that require the most trains (takes ~ 30s)\n";
+    std::cout << "[3] Top K Places // REVIEW THIS\n";
     std::cout << "[4] Maximum number of trains in a stations at the time\n";
     std::cout << "[5] Travel trains simultaneously with min cost to company\n";
     std::cout << "[6] Max travel trains simultaneously with reduced connectivity\n";

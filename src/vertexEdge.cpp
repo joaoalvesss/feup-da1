@@ -153,3 +153,7 @@ void Edge::setFlow(double flow) {
 int Edge::getWeight() const {
     return weight;
 }
+
+void Edge::setCapacity(int capacity) {
+    this->capacity = capacity;
+}

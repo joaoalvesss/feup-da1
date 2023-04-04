@@ -73,6 +73,8 @@ public:
 
     void setReverse(Edge *reverse);
     void setFlow(double flow);
+    void setCapacity(int capacity);
+
 protected:
     Vertex * dest;
     double capacity;

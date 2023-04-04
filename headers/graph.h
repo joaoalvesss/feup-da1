@@ -41,8 +41,8 @@ public:
 
     int findMaxStationTrains(const std::string &station); // 2.4 topic
 
-    int maxTrainsMinCost(const std::string &src, const std::string &tgt); // 3.1 topic
-    std::vector<Vertex*> dijkstraShortestPath(const std::string &startId, const std::string &endId);
+    std::pair<double, double> maxTrainsMinCost(const std::string &src, const std::string &tgt); // 3.1 topic
+    bool dijkstraShortestPath(const std::string &source, const std::string &target);
 
     int reducedConnectivity(const std::string &source, const std::string &dest); // 4.1 topic
 protected:

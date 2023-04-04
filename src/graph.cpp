@@ -263,58 +263,75 @@ int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
     return maxFlow;
 }
 
-std::vector<Vertex*> Graph::dijkstraShortestPath(const std::string &source, const std::string &target) {
-    Vertex *start = findVertex(source);
-    Vertex *end = findVertex(target);
-    std::unordered_map<Vertex *, double> dist;
-    std::unordered_map<Vertex *, Vertex *> prev;
-    std::priority_queue<std::pair<double, Vertex *>, std::vector<std::pair<double, Vertex *>>, std::greater<>> pq;
-    for (auto v : vertexSet) {
-        dist[v] = std::numeric_limits<double>::infinity();
-        prev[v] = nullptr;
+struct CompareVertexPointers {
+    bool operator()(Vertex *v1, Vertex *v2) const {
+        return v1->getDist() > v2->getDist();
     }
-    dist[start] = 0.0;
-    pq.push(std::make_pair(0.0, start));
-    while (!pq.empty()) {
-        Vertex *u = pq.top().second;
-        pq.pop();
-        if (u == end) {
+};
+
+bool Graph::dijkstraShortestPath(const std::string &source, const std::string &target) {
+    std::priority_queue<Vertex *, std::vector<Vertex *>, CompareVertexPointers> stations;
+
+    for (Vertex *v: vertexSet) {
+        v->setVisited(false);
+        v->setDist(INF);
+        v->setPath(nullptr);
+    }
+
+    findVertex(source)->setDist(0);
+    stations.push(findVertex(source));
+
+    while (!stations.empty()) {
+        Vertex *top = stations.top();
+        stations.pop();
+
+        if (top->isVisited()) continue;
+        top->setVisited(true);
+
+        if (top->getName() == target) {
             break;
         }
-        for (auto e : u->getAdj()) {
-            Vertex *v = e->getDest();
-            double w = e->getWeight();
-            double alt = dist[u] + w;
-            if (alt < dist[v]) {
-                dist[v] = alt;
-                prev[v] = u;
-                pq.push(std::make_pair(dist[v], v));
+
+        for (Edge *v: top->getAdj()) {
+
+            Vertex *to = v->getDest();
+
+            if (to->isVisited()) continue;
+
+            std::string cmp = "STANDARD";
+            double cost = (*(v->getServiceType()) == cmp ? 2 : 4) * (v->getCapacity() - v->getFlow());
+
+            if (to->getDist() > top->getDist() + cost) {
+                to->setDist(top->getDist() + cost);
+                to->setPath(v);
+                stations.push(to);
             }
         }
     }
-    std::vector<Vertex *> path;
-    if (prev[end] != nullptr) {
-        for (Vertex *v = end; v != nullptr; v = prev[v]) {
-            path.push_back(v);
-        }
-        std::reverse(path.begin(), path.end());
-    }
-    return path;
+
+    if (!findVertex(target)->isVisited()) return false;
+    return true;
 }
 
-int Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V * E^2)
-    Vertex *source = findVertex(src);
-    Vertex *target = findVertex(tgt);
-
-    if (!source || !target) { return -1; }
-    int costStandard = 2;
-    int costAlpha = 4;
-    int minCost = 0;
-    resetFlows();
-    while (findAugmentingPath(source, target)){
-        std::vector<Vertex *> path = dijkstraShortestPath();
+std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V * E^2)
+    double f = INF;
+    double cost = 0;
+    if(!dijkstraShortestPath(src, tgt)) return {-1, -1};
+    for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
+        f = std::min(f, v->getPath()->getCapacity() - v->getPath()->getFlow());
     }
-    return minCost;
+
+    for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
+
+        if ((string)"STANDARD" != *(v->getPath()->getServiceType())) {
+            cost += f * 4;
+        }
+        else {
+            cost += f * 2;
+        }
+    }
+
+    return {cost, f};
 }
 
 int Graph::reducedConnectivity(const std::string &source, const std::string &dest){ // 4.1 topic
