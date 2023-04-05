@@ -23,37 +23,39 @@ void Menu::init() {
             case 1:
             {
                 std::string src;
-
-                std::cout << "Enter the src: ";
-                std::cin >> std::ws;
-                std::getline(std::cin, src);
-
                 std::string dest;
 
-                std::cout << "Enter the dest: ";
+                std::cout << "\t> Enter the source station:";
+                std::cin >> std::ws;
+                std::getline(std::cin, src);
+                //std::cout << "\n";
+
+                std::cout << "\t   > Enter the destiny station:";
                 std::cin >> std::ws;
                 std::getline(std::cin, dest);
+                std::cout << "\n";
 
                 int train_num = graph.edmondsKarp(src, dest);
 
                 if(train_num == -1){
-                    std::cout << "Insert valid stations! " << src << " " << dest;
+                    std::cout << "\t> Either one or both station dont exist!\n";
                 } else if(train_num == -2){
-                    std::cout << "There's no connection between the stations";
+                    std::cout << "\t> There's no connection between the stations,\n\t> so the flow between those stations is 0";
                 } else{
-                    std::cout << "The max number of trains that can simultaneously travel between the stations is: " << train_num << '\n';
+                    std::cout << "\t> The maximum number of trains that can\n\t> simultaneously travel between the stations is " << train_num << '\n';
                 }
                 break;
             }
             case 2:
             {
                 int aux;
+                std::cout << "\t> Processing...\n\n";
                 std::vector<pair<pair<std::string, std::string>, int>> value = graph.findMostTrainsRequired();
                 for(const auto &pair : value){
-                    cout << "{" << pair.first.first << "->" << pair.first.second << "}\n";
+                    cout << "\t> " << pair.first.first << " -> " << pair.first.second << "\n";
                     aux = pair.second;
                 }
-                cout << "Number of trains: " << aux;
+                cout << "\n\t> Maximum number of trains is " << aux << "\n";
                 break;
             }
             case 3:
@@ -62,68 +64,108 @@ void Menu::init() {
                 bool district;
                 int k;
 
-                cout << "Want to see districts? Enter exactly yes or no:";
+                std::cout << "\t> Do want to see districts or municipalities? D/m \n ";
+                std::cout << "\t> ";
                 std::cin >> std::ws;
                 std::getline(std::cin, answer);
 
+                if(answer == "D"){ district = true; }
+                else { district = false; }
 
-                if(answer == "yes") district = true;
-                else district = false;
+                std::cout << "\n";
 
-                cout << "\n How many do you want to see?";
+                std::cout << "\t> How many do you want to see?\n";
+                std::cout << "\t> ";
                 std::cin >> k;
 
-                for(const auto &value : graph.topKPlaces(k, district)){
-                    cout << value.s << " - " << value.i << "\n";
-                }
-            }
-                break;
 
+                std::vector<std::pair<std::string, double>> aux;
+                std::string helper;
+                if(district){ aux = graph.getMaxFlowPerDistrict(); helper = "districts"; }
+                else{ aux = graph.getMaxFlowPerMunicipality(); helper = "municipalities"; }
+
+                std::cout << "\n\t> The top-k " << helper << " to invest in:\n\n";
+                if(district && (k > 18)) k = 18;
+                else if(!district && (k > 136)) k = 136;
+                for(int i = 0; i < k; i++){ cout << "\t> " << i+1 << "o " << aux[i].first << " with " << aux[i].second << " flow\n";  }
+                break;
+            }
             case 4:
             {
                 std::string station;
 
-                std::cout << "Station name:";
+                std::cout << "\t> Station name: ";
                 std::cin >> std::ws;
                 std::getline(std::cin, station);
 
-                cout << "The maximum number of trains in [" << station << "] is [" << graph.findMaxStationTrains(station) << "]\n";
+                cout << "\n\t> The maximum number of trains in the " << station << " station is " << graph.findMaxStationTrains(station) << "\n";
                 break;
             }
 
             case 5:
             {
                 std::string src;
+                std::string tgt;
 
-                std::cout << "Enter the src: ";
+                std::cout << "\t> Enter the source station: ";
                 std::cin >> std::ws;
                 std::getline(std::cin, src);
 
-                std::string tgt;
-
-                std::cout << "Enter the dest: ";
+                std::cout << "\t   > Enter the destiny station: ";
                 std::cin >> std::ws;
                 std::getline(std::cin, tgt);
+                std::cout << endl;
 
                 std::pair<double,double> aux = graph.maxTrainsMinCost(src, tgt);
-                cout << "Max flow from " << src << " to " << tgt << " costs " << aux.first << " with flow " << aux.second;
+                cout << "\t> Max flow from " << src << " to " << tgt << " costs " << aux.first << " with flow " << aux.second << "\n";
                 break;
             }
 
             case 6:
-                break;
+            {
+                std::string src;
+                std::string tgt;
 
+                std::cout << "\t> Enter the source station: ";
+                std::cin >> std::ws;
+                std::getline(std::cin, src);
+
+                std::cout << "\t   > Enter the destiny station: ";
+                std::cin >> std::ws;
+                std::getline(std::cin, tgt);
+                std::cout << "\n";
+
+                int i = graph.reducedConnectivity(src, tgt);
+                if(i == -2){
+                    std::cout << "\t> With this reduce connectivity there's\n\t> no longer a path between those station.\n";
+                } else {
+                    std::cout << "\t> Maximum flow from " << src << " to " << tgt << " with\n\t> reduced connectivity network is " << i << "\n";
+                }
+                break;
+            }
             case 7:
-                break;
+            {
+                int k;
+                int q;
 
-            case 8:
-                break;
+                std::cout << "\t> How many do you want to see? ";
+                std::cin >> k;
+                std::cout << "\n";
 
-            case 9:
+                std::cout << "\t> Sort by percentage of capacity lost\n\t> or total number of trains lost? 1/2: ";
+                std::cin >> q;
+                std::cout << "\n";
+                vector<StringInt> v = graph.topKMostAffected(k, q);
+                cout << "\t> The top-k stations affected by the reported failures are:";
+                for (const StringInt& si : v) {
+                    if (k == 1) std::cout << '\n' << si.s << " " << si.i << "%";
+                    else std::cout << "\n\t" << si.s << " " << si.i;
+                }
                 break;
+            }
 
             default:
-                std::cout << "Please choose a valid option.\n";
+                std::cout << "\t> Please choose a valid option.\n";
                 break;
         }
     }
@@ -133,21 +175,21 @@ int Menu::showMenu() {
     int choice;
 
     std::cout << "\n\n";
-    std::cout << "-------------------------- MAIN MENU ---------------------------\n";
-    std::cout << "[0] Quit\n";
-    std::cout << "[1] Maximum number of trains that can travel between two stations\n";
-    std::cout << "[2] Pairs of stations that require the most trains (takes ~ 30s)\n";
-    std::cout << "[3] Top K Places // REVIEW THIS\n";
-    std::cout << "[4] Maximum number of trains in a stations at the time\n";
-    std::cout << "[5] Travel trains simultaneously with min cost to company\n";
-    std::cout << "[6] Max travel trains simultaneously with reduced connectivity\n";
-    std::cout << "[7] Top K most affected stations by each segment failure\n\n";
+    std::cout << "\t-------------------------- MAIN MENU ---------------------------\n";
+    std::cout << "\t[0] Finish execution and quit\n";
+    std::cout << "\t[1] Maximum number of trains that can travel between two stations DONE \n";
+    std::cout << "\t[2] Pairs of stations that handle the most trains (takes ~ 30s) DONE \n";
+    std::cout << "\t[3] Top-k districts or municipalities to invest more DONE?\n";
+    std::cout << "\t[4] Maximum number of trains in a stations at the time DONE\n";
+    std::cout << "\t[5] Travel trains simultaneously with minimum company's cost WRONG\n";
+    std::cout << "\t[6] Max travel trains simultaneously with reduced connectivity DONE?\n";
+    std::cout << "\t[7] Top K most affected stations by each segment failure WRONG\n";
+    std::cout << "\t----------------------------------------------------------------\n\n";
 
-    std::cout << "\tEnter your choice: ";
+    std::cout << "\t> Enter your choice: ";
     std::cin >> choice;
 
     if (!std::cin) { exit(0);}
-
 
     std::cout.flush();
     std::cout << "\n";
@@ -157,5 +199,5 @@ int Menu::showMenu() {
 }
 
 void Menu::finish() {
-    std::cout << "Finishing execution.\n";
+    std::cout << "\t> Finishing execution...\n";
 }

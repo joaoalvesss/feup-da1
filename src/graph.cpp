@@ -165,6 +165,22 @@ bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){ // O(V + E)
     return (dest->getPath() != nullptr);
 }
 
+double Graph::bottleneck(const std::string &source, const std::string &target) {
+    resetVisits();
+    resetFlows();
+
+    edmondsKarp(source, target);
+
+    double bottleneck = INF;
+    Vertex *v = findVertex(target);
+    while (v->getPath() != nullptr) {
+        Edge *e = v->getPath();
+        bottleneck = std::min(bottleneck, e->getCapacity() - e->getFlow());
+        v = e->getOrig();
+    }
+    return bottleneck;
+}
+
 std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // O(V^4 * E^2)
     int most_trains_required = 0;
     int trains_num = -1;
@@ -208,6 +224,7 @@ std::vector<StringInt> Graph::topKPlaces(int k, bool district) { // REVER
     std::vector<std::string> names;
     std::vector<int> ints;
     std::string d;
+
     for (auto v : vertexSet) {
         if (district) d = v->getDistrict();
         else d = v->getMunicipality();
@@ -240,7 +257,7 @@ int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
     std::vector<Vertex *> sources;
 
     for (Vertex *const &v: vertexSet) {
-        if (v->getAdj().size() == 1) {
+        if (v->getAdj().size() == 1 && v->getName() != station) {
             sources.push_back(v);
         }
     }
@@ -288,18 +305,14 @@ bool Graph::dijkstraShortestPath(const std::string &source, const std::string &t
         if (top->isVisited()) continue;
         top->setVisited(true);
 
-        if (top->getName() == target) {
-            break;
-        }
+        if (top->getName() == target) { break; }
 
         for (Edge *v: top->getAdj()) {
-
             Vertex *to = v->getDest();
-
             if (to->isVisited()) continue;
 
-            std::string cmp = "STANDARD";
-            double cost = (*(v->getServiceType()) == cmp ? 2 : 4) * (v->getCapacity() - v->getFlow());
+            std::string standard = "STANDARD";
+            double cost = (*(v->getServiceType()) == standard ? 2 : 4) * (v->getCapacity() - v->getFlow());
 
             if (to->getDist() > top->getDist() + cost) {
                 to->setDist(top->getDist() + cost);
@@ -308,41 +321,147 @@ bool Graph::dijkstraShortestPath(const std::string &source, const std::string &t
             }
         }
     }
-
-    if (!findVertex(target)->isVisited()) return false;
-    return true;
+    return findVertex(target)->isVisited();
 }
 
 std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V * E^2)
     double f = INF;
-    double cost = 0;
+    int cost = 0;
     if(!dijkstraShortestPath(src, tgt)) return {-1, -1};
+
     for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
         f = std::min(f, v->getPath()->getCapacity() - v->getPath()->getFlow());
     }
 
     for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
-
-        if ((string)"STANDARD" != *(v->getPath()->getServiceType())) {
-            cost += f * 4;
-        }
-        else {
-            cost += f * 2;
-        }
+        if ((string) "STANDARD" != *(v->getPath()->getServiceType())) { cost += f * 4; }
+        else { cost += f * 2; }
     }
-
     return {cost, f};
 }
 
+bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) {
+    std::string q;
+    std::cout << "\t> Do you want to remove another network? Y/n: ";
+    std::cin >> std::ws;
+    std::getline(std::cin, q);
+
+    if (q != (std::string)("Y")) { std::cout << "\n"; return false; }
+
+    std::cout << "\n\t> Enter the first station: ";
+    std::cin >> std::ws;
+    std::getline(std::cin, src);
+
+    std::cout << "\t  > Enter the second station: ";
+    std::cin >> std::ws;
+    std::getline(std::cin, tgt);
+    std::cout << "\n";
+
+    return true;
+}
+
 int Graph::reducedConnectivity(const std::string &source, const std::string &dest){ // 4.1 topic
-    // remover edges
-    // remover vertex
-    // remover linhas
-    // remover serviço
-    // guardar tudo
+    Graph g = Graph(*this);
+    std::string remove_src;
+    std::string remove_tgt;
+    while (askForRemovedEdge(remove_src, remove_tgt)) {
+        Vertex * v1 = g.findVertex(remove_src);
+        Vertex * v2 = g.findVertex(remove_tgt);
+        v1->removeEdge(v2->getId());
+        v2->removeEdge(v1->getId());
+    }
+    return g.edmondsKarp(source, dest);
+}
 
-    edmondsKarp(source, dest);
+std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
+    Graph g = Graph(*this);
+    std::string remove_src;
+    std::string remove_tgt;
 
-    // repor tudo
-    return 0;
+    while (askForRemovedEdge(remove_src, remove_tgt)) {
+        Vertex *v1 = g.findVertex(remove_src);
+        Vertex *v2 = g.findVertex(remove_tgt);
+        v1->removeEdge(v2->getId());
+        v2->removeEdge(v1->getId());
+    }
+
+    std::vector<StringInt> pre;
+
+    for (auto v : vertexSet) {
+        StringInt si;
+        si.s = v->getName();
+        si.i = findMaxStationTrains(v->getName());
+        pre.push_back(si);
+    }
+
+    std::vector<StringInt> post;
+    for (auto v : g.getVertexSet()) {
+        StringInt si;
+        si.s = v->getName();
+        si.i = g.findMaxStationTrains(v->getName());
+        post.push_back(si);
+    }
+
+    std::vector<StringInt> res;
+    for (const StringInt& a : pre) {
+        StringInt si;
+        si.s = a.s;
+        StringInt b;
+        for (const StringInt& n : post) {
+            if (n.s == a.s) {
+                b = n;
+                break;
+            }
+        }
+        if (q == 1) si.i = 100 - (b.i * 100 / a.i);
+        else si.i = a.i - b.i;
+        res.push_back(si);
+    }
+    sort(res.end(), res.begin());
+
+    while (res.size() > k) {
+        res.pop_back();
+    }
+
+    return res;
+}
+
+std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerDistrict() {
+    std::unordered_map<std::string, double> districtFlowMap;
+
+    for (auto vertex : vertexSet) {
+        std::string district = vertex->getDistrict();
+        if (districtFlowMap.find(district) == districtFlowMap.end()) {
+            districtFlowMap[district] = 0;
+        }
+        for (auto edge : vertex->getAdj()) {
+            if(vertex->getDistrict() == edge->getDest()->getDistrict()){
+                districtFlowMap[district] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
+            }
+        }
+    }
+    std::vector<std::pair<std::string, double>> districtFlowVec(districtFlowMap.begin(), districtFlowMap.end());
+    std::sort(districtFlowVec.begin(), districtFlowVec.end(), [](auto& a, auto& b){ return a.second > b.second; });
+
+    return districtFlowVec;
+}
+
+std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerMunicipality(){
+    std::unordered_map<std::string, double> municipalityFlowMap;
+
+    for (auto vertex : vertexSet) {
+        std::string municipality = vertex->getMunicipality();
+        if (municipalityFlowMap.find(municipality) == municipalityFlowMap.end()) {
+            municipalityFlowMap[municipality] = 0;
+        }
+        for (auto edge : vertex->getAdj()) {
+            if(vertex->getMunicipality() == edge->getDest()->getMunicipality()){
+                municipalityFlowMap[municipality] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
+            }
+        }
+    }
+    std::vector<std::pair<std::string, double>> municipalityFlowVec(municipalityFlowMap.begin(), municipalityFlowMap.end());
+    std::sort(municipalityFlowVec.begin(), municipalityFlowVec.end(), [](auto& a, auto& b){ return a.second > b.second; });
+
+    return municipalityFlowVec;
 }

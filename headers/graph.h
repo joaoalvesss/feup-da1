@@ -36,8 +36,12 @@ public:
 
     int edmondsKarp(const std::string &source, const std::string &dest); // 2.1 topic
     bool findAugmentingPath(Vertex * source, Vertex * dest); // 2.1 topic
+    double bottleneck(const std::string &source, const std::string &target);
     std::vector<std::pair<std::pair<std::string, std::string>, int>> findMostTrainsRequired(); // 2.2 topic
     std::vector<StringInt> topKPlaces(int k, bool district);
+    std::vector<std::pair<std::string, double>> getMaxFlowPerDistrict(); // 2.3 topic
+    std::vector<std::pair<std::string, double>> getMaxFlowPerMunicipality(); // 2.3 topic
+
 
     int findMaxStationTrains(const std::string &station); // 2.4 topic
 
@@ -45,6 +49,9 @@ public:
     bool dijkstraShortestPath(const std::string &source, const std::string &target);
 
     int reducedConnectivity(const std::string &source, const std::string &dest); // 4.1 topic
+    static bool askForRemovedEdge(std::string &src, std::string &tgt); // 4.1 topic
+
+    std::vector<StringInt> topKMostAffected(int k, int q);
 protected:
 
     std::vector<Vertex *> vertexSet;    // vertex set
