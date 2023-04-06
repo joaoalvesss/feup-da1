@@ -52,7 +52,6 @@ int Graph::findVertexIdx(const int &id) const {
 }
 /*
  *  Adds a vertex with a given content or info (in) to a graph (this).
- *  Returns true if successful, and false if a vertex with that content already exists.
  */
 void Graph::addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line) { // TODO
     auto * v = new Vertex(id, name, district, municipality, township, line);
@@ -66,7 +65,6 @@ void Graph::addVertex(const int &id, const std::string &name, const std::string 
 /*
  * Adds an edge to a graph (this), given the contents of the source and
  * destination vertices and the edge weight (w).
- * Returns true if successful, and false if the source or destination vertex does not exist.
  */
 void Graph::addEdge(const std::string &source, const std::string &dest, double capacity, std::string service_type, int weight) {
     auto v1 = findVertex(source);
@@ -74,6 +72,12 @@ void Graph::addEdge(const std::string &source, const std::string &dest, double c
     v1->addEdge(v2, capacity, service_type, weight);
 }
 
+/*
+ * Adds an edge to a graph (this), given the contents of the source and
+ * destination vertices and the edge weight (w).
+ * Also adds the reverse edge, meaning an edge with the same values but
+ * with reversed source and destination.
+ */
 void Graph::addBidirectionalEdge(const std::string &source, const std::string &dest, double w, std::string &service_type, int weight) {
     auto v1 = findVertex(source);
     auto v2 = findVertex(dest);
@@ -83,6 +87,9 @@ void Graph::addBidirectionalEdge(const std::string &source, const std::string &d
     e2->setReverse(e1);
 }
 
+/*
+ * Resets the Graph's nodes to not visited.
+ */
 void Graph::resetVisits() {
     for(Vertex* v: vertexSet){
         (*v).setVisited(false);
@@ -97,7 +104,8 @@ void Graph::resetFlows(){
     }
 }
 
-int Graph::edmondsKarp(const std::string &source, const std::string &dest){ // O(V * E^2)
+
+int Graph::edmondsKarp(const std::string &source, const std::string &dest){
     Vertex *s = findVertex(source);
     Vertex *d = findVertex(dest);
 
@@ -142,7 +150,7 @@ int Graph::edmondsKarp(const std::string &source, const std::string &dest){ // O
     else { return (int)maxFlow; }
 }
 
-bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){ // O(V + E)
+bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){
     for (Vertex *v : vertexSet) {
         v->setVisited(false);
         v->setPath(nullptr);
@@ -169,23 +177,8 @@ bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){ // O(V + E)
     return (dest->getPath() != nullptr);
 }
 
-double Graph::bottleneck(const std::string &source, const std::string &target) {
-    resetVisits();
-    resetFlows();
 
-    edmondsKarp(source, target);
-
-    double bottleneck = INF;
-    Vertex *v = findVertex(target);
-    while (v->getPath() != nullptr) {
-        Edge *e = v->getPath();
-        bottleneck = std::min(bottleneck, e->getCapacity() - e->getFlow());
-        v = e->getOrig();
-    }
-    return bottleneck;
-}
-
-std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // O(V^4 * E^2)
+std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // O(V^3 * E^2)
     int most_trains_required = 0;
     int trains_num = -1;
     std::vector<std::pair<std::pair<std::string, std::string>, int>> stations;
@@ -216,47 +209,6 @@ std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMost
     return stations;
 }
 
-int stringInVector(const std::string& s, std::vector<std::string> v) {
-    for (int i = 0; i < v.size(); i++) {
-        if (v[i] == s) return i;
-    }
-    return -1;
-}
-
-std::vector<StringInt> Graph::topKPlaces(int k, bool district) { // REVER
-    std::vector<StringInt> res;
-    std::vector<std::string> names;
-    std::vector<int> ints;
-    std::string d;
-
-    for (auto &v : vertexSet) {
-        if (district) d = v->getDistrict();
-        else d = v->getMunicipality();
-        int i = stringInVector(d, names);
-        for (auto &e : v->getAdj()) {
-            if (i > -1) {
-                ints[i] += e->getCapacity();
-            }
-            else {
-                names.push_back(d);
-                ints.push_back(e->getCapacity());
-            }
-        }
-    }
-    for (int i = 0; i < names.size(); i++){
-        StringInt a = *new StringInt();
-        a.i = ints[i];
-        a.s = names[i];
-        res.push_back(a);
-    }
-    sort(res.begin(), res.end());
-    while (res.size() > k) {
-        res.pop_back();
-    }
-    return res;
-}
-
-
 int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
     std::vector<Vertex *> sources;
 
@@ -266,7 +218,7 @@ int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
         }
     }
 
-    Vertex *superSource = new Vertex(vertexSet.size(), "super_source", "", "", "", "");
+    auto *superSource = new Vertex((int)vertexSet.size(), "super_source", "", "", "", "");
     vertexSet.push_back(superSource);
 
     for (Vertex * &s: sources) {
@@ -292,61 +244,59 @@ struct CompareVertexPointers {
     }
 };
 
-bool Graph::dijkstraShortestPath(const std::string &source, const std::string &target) {
-    std::priority_queue<Vertex *, std::vector<Vertex *>, CompareVertexPointers> stations;
-
-    for (Vertex *v: vertexSet) {
-        v->setVisited(false);
-        v->setDist(INF);
-        v->setPath(nullptr);
-    }
-
-    findVertex(source)->setDist(0);
-    stations.push(findVertex(source));
-
-    while (!stations.empty()) {
-        Vertex *top = stations.top();
-        stations.pop();
-
-        if (top->isVisited()) continue;
-        top->setVisited(true);
-
-        if (top->getName() == target) { break; }
-
-        for (Edge *v: top->getAdj()) {
-            Vertex *to = v->getDest();
-            if (to->isVisited()) continue;
-
-            std::string standard = "STANDARD";
-            double cost = ((*(v->getServiceType()) == standard) ? 2 : 4) * (v->getCapacity() - v->getFlow());
-
-            if (to->getDist() > top->getDist() + cost) {
-                to->setDist(top->getDist() + cost);
-                to->setPath(v);
-                stations.push(to);
+std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V^2 * E^3 * log V)
+    double cost = 0;
+    Vertex *source = findVertex(src);
+    Vertex *sink = findVertex(tgt);
+    resetFlows();
+    while (findAugmentingPath(source, sink)) {
+        for (Vertex *v : vertexSet) {
+            v->setVisited(false);
+            v->setPath(nullptr);
+            v->setDist(INF);
+        }
+        std::priority_queue<std::pair<double, Vertex *>, std::vector<std::pair<double, Vertex *>>, std::greater<>> pq;
+        source->setDist(0);
+        pq.push(std::make_pair(0, source));
+        while (!pq.empty()) {
+            Vertex *v = pq.top().second;
+            pq.pop();
+            if (!v->isVisited()) {
+                v->setVisited(true);
+                for (Edge *e : v->getAdj()) {
+                    Vertex *w = e->getDest();
+                    if ((e->getCapacity() - e->getFlow() > 0) && (v->getDist() + e->getWeight() < w->getDist())) {
+                        w->setDist(v->getDist() + e->getWeight());
+                        w->setPath(e);
+                        pq.push(std::make_pair(w->getDist(), w));
+                    }
+                }
             }
         }
+
+        double bottleneckCapacity = INF;
+        for (Vertex *v = sink; v != source; v = v->getPath()->getOrig()) {
+            bottleneckCapacity = std::min(bottleneckCapacity, v->getPath()->getCapacity() - v->getPath()->getFlow());
+        }
+
+        for (Vertex *v = sink; v != source; v = v->getPath()->getOrig()) {
+            Edge *e = v->getPath();
+            e->setFlow(e->getFlow() + bottleneckCapacity);
+            e->getReverse()->setFlow(e->getReverse()->getFlow() - bottleneckCapacity);
+            cost += bottleneckCapacity * e->getWeight();
+        }
+
+        for (Vertex *v : vertexSet) {
+            v->setVisited(false);
+            v->setPath(nullptr);
+            v->setDist(INF);
+        }
     }
-    return findVertex(target)->isVisited();
+    resetFlows();
+    return {cost, (double)(edmondsKarp(src, tgt))};
 }
 
-std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V * E^2)
-    double f = INF;
-    int cost = 0;
-    if(!dijkstraShortestPath(src, tgt)) return {-1, -1};
-
-    for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
-        f = std::min(f, v->getPath()->getCapacity() - v->getPath()->getFlow());
-    }
-
-    for (Vertex *v = findVertex(tgt); v->getPath() != nullptr; v = v->getPath()->getOrig()) {
-        if ((string) "STANDARD" != *(v->getPath()->getServiceType())) { cost += f * 4; }
-        else { cost += f * 2; }
-    }
-    return {cost, f};
-}
-
-bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) {
+bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) { // O(1)
     std::string q;
     std::cout << "\t> Do you want to remove another network? Y/n: ";
     std::cin >> std::ws;
@@ -381,8 +331,6 @@ int Graph::reducedConnectivity(const std::string &source, const std::string &des
     int res = edmondsKarp(source, dest);
 
     for (auto e : put_back) e->getOrig()->addEdge(e->getDest(), e->getCapacity(), *(e->getServiceType()), e->getWeight());
-
-
 
     if (res == -2) return 0;
     return res;
