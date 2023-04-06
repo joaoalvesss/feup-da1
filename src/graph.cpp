@@ -56,6 +56,10 @@ int Graph::findVertexIdx(const int &id) const {
  */
 void Graph::addVertex(const int &id, const std::string &name, const std::string &district, const std::string & municipality, const std::string &township, const std::string &line) { // TODO
     auto * v = new Vertex(id, name, district, municipality, township, line);
+    for(Vertex* const &aux : vertexSet){
+        if(aux->getName() == v->getName())
+            return;
+    }
     vertexSet.push_back(v);
 }
 
@@ -225,11 +229,11 @@ std::vector<StringInt> Graph::topKPlaces(int k, bool district) { // REVER
     std::vector<int> ints;
     std::string d;
 
-    for (auto v : vertexSet) {
+    for (auto &v : vertexSet) {
         if (district) d = v->getDistrict();
         else d = v->getMunicipality();
         int i = stringInVector(d, names);
-        for (auto e : v->getAdj()) {
+        for (auto &e : v->getAdj()) {
             if (i > -1) {
                 ints[i] += e->getCapacity();
             }
@@ -256,23 +260,25 @@ std::vector<StringInt> Graph::topKPlaces(int k, bool district) { // REVER
 int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
     std::vector<Vertex *> sources;
 
-    for (Vertex *const &v: vertexSet) {
+    for (Vertex * &v: vertexSet) {
         if (v->getAdj().size() == 1 && v->getName() != station) {
             sources.push_back(v);
         }
     }
 
-    auto *superSource = new Vertex(-1, "super_source", "", "", "", "");
+    Vertex *superSource = new Vertex(vertexSet.size(), "super_source", "", "", "", "");
     vertexSet.push_back(superSource);
 
-    for (Vertex *const &s: sources) {
+    for (Vertex * &s: sources) {
         Edge *e = superSource->addEdge(s, INF, (string &) "", 0);
         s->getIncoming().push_back(e);
     }
 
     int maxFlow = edmondsKarp(superSource->getName(), station);
-
-    for (Vertex *const &s: sources) { s->removeEdge(superSource->getId()); }
+    if (maxFlow == -2) maxFlow = 0;
+    for (Vertex* &s: sources) {
+        superSource->removeEdge(s->getId());
+    }
 
     vertexSet.pop_back();
     delete superSource;
@@ -281,7 +287,7 @@ int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
 }
 
 struct CompareVertexPointers {
-    bool operator()(Vertex *v1, Vertex *v2) const {
+    bool operator() (Vertex *v1, Vertex *v2) const {
         return v1->getDist() > v2->getDist();
     }
 };
@@ -312,7 +318,7 @@ bool Graph::dijkstraShortestPath(const std::string &source, const std::string &t
             if (to->isVisited()) continue;
 
             std::string standard = "STANDARD";
-            double cost = (*(v->getServiceType()) == standard ? 2 : 4) * (v->getCapacity() - v->getFlow());
+            double cost = ((*(v->getServiceType()) == standard) ? 2 : 4) * (v->getCapacity() - v->getFlow());
 
             if (to->getDist() > top->getDist() + cost) {
                 to->setDist(top->getDist() + cost);
@@ -361,30 +367,28 @@ bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) {
 }
 
 int Graph::reducedConnectivity(const std::string &source, const std::string &dest){ // 4.1 topic
-    Graph g = Graph(*this);
     std::string remove_src;
     std::string remove_tgt;
+    std::list<Edge *> put_back;
     while (askForRemovedEdge(remove_src, remove_tgt)) {
-        Vertex * v1 = g.findVertex(remove_src);
-        Vertex * v2 = g.findVertex(remove_tgt);
-        v1->removeEdge(v2->getId());
-        v2->removeEdge(v1->getId());
+        Vertex * v1 = findVertex(remove_src);
+        Vertex * v2 = findVertex(remove_tgt);
+        Edge * e1 = v1->removeEdge(v2->getId());
+        Edge * e2 = v2->removeEdge(v1->getId());
+        put_back.push_back(e1);
+        put_back.push_back(e2);
     }
-    return g.edmondsKarp(source, dest);
+    int res = edmondsKarp(source, dest);
+
+    for (auto e : put_back) e->getOrig()->addEdge(e->getDest(), e->getCapacity(), *(e->getServiceType()), e->getWeight());
+
+
+
+    if (res == -2) return 0;
+    return res;
 }
 
 std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
-    Graph g = Graph(*this);
-    std::string remove_src;
-    std::string remove_tgt;
-
-    while (askForRemovedEdge(remove_src, remove_tgt)) {
-        Vertex *v1 = g.findVertex(remove_src);
-        Vertex *v2 = g.findVertex(remove_tgt);
-        v1->removeEdge(v2->getId());
-        v2->removeEdge(v1->getId());
-    }
-
     std::vector<StringInt> pre;
 
     for (auto v : vertexSet) {
@@ -394,13 +398,26 @@ std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
         pre.push_back(si);
     }
 
+    std::string remove_src;
+    std::string remove_tgt;
+    std::list<Edge *> put_back;
+    while (askForRemovedEdge(remove_src, remove_tgt)) {
+        Vertex *v1 = findVertex(remove_src);
+        Vertex *v2 = findVertex(remove_tgt);
+        Edge * e1 = v1->removeEdge(v2->getId());
+        Edge * e2 = v2->removeEdge(v1->getId());
+        put_back.push_back(e1);
+        put_back.push_back(e2);
+    }
+
     std::vector<StringInt> post;
-    for (auto v : g.getVertexSet()) {
+    for (auto v : getVertexSet()) {
         StringInt si;
         si.s = v->getName();
-        si.i = g.findMaxStationTrains(v->getName());
+        si.i = findMaxStationTrains(v->getName());
         post.push_back(si);
     }
+
 
     std::vector<StringInt> res;
     for (const StringInt& a : pre) {
@@ -413,14 +430,19 @@ std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
                 break;
             }
         }
-        if (q == 1) si.i = 100 - (b.i * 100 / a.i);
+        if (a.i == 0) si.i = 0;
+        else if (q == 1) si.i = 100 - (b.i * 100 / a.i);
         else si.i = a.i - b.i;
         res.push_back(si);
     }
-    sort(res.end(), res.begin());
+    sort(res.begin(), res.end());
 
     while (res.size() > k) {
         res.pop_back();
+    }
+
+    for (auto &e : put_back) {
+        e->getOrig()->addEdge(e->getDest(), e->getCapacity(), *(e->getServiceType()), e->getWeight());
     }
 
     return res;

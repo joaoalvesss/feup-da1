@@ -34,7 +34,7 @@ public:
     void setDist(double dist);
     void setPath(Edge *path);
     Edge *addEdge(Vertex *dest, double cap, std::string &type, int weight);
-    bool removeEdge(int destID);
+    Edge *removeEdge(int destID);
 
 protected:
 

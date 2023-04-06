@@ -20,13 +20,15 @@ Edge * Vertex::addEdge(Vertex *dest, double cap, std::string &type, int weight) 
     return newEdge;
 }
 
-bool Vertex::removeEdge(int destID) {
+Edge * Vertex::removeEdge(int destID) {
     bool removedEdge = false;
     auto it = adj.begin();
+    Edge *res;
     while (it != adj.end()) {
         Edge *edge = *it;
         Vertex *dest = edge->getDest();
         if (dest->getId() == destID) {
+            res = *it;
             it = adj.erase(it);
             // Also remove the corresponding edge from the incoming list
             auto it2 = dest->incoming.begin();
@@ -45,7 +47,7 @@ bool Vertex::removeEdge(int destID) {
             it++;
         }
     }
-    return removedEdge;
+    return res;
 }
 
 std::string Vertex::getName() const{

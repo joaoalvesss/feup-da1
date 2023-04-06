@@ -155,12 +155,19 @@ void Menu::init() {
                 std::cout << "\t> Sort by percentage of capacity lost\n\t> or total number of trains lost? 1/2: ";
                 std::cin >> q;
                 std::cout << "\n";
+
                 vector<StringInt> v = graph.topKMostAffected(k, q);
-                cout << "\t> The top-k stations affected by the reported failures are:";
+
+                cout << "\t> The top-k stations affected by the reported failures are:\n";
                 for (const StringInt& si : v) {
-                    if (k == 1) std::cout << '\n' << si.s << " " << si.i << "%";
-                    else std::cout << "\n\t" << si.s << " " << si.i;
+                    if (q == 1){
+                        std::cout << "\n\t> The " << si.s << " station got its flow affected by " << si.i << "%";
+                    }
+                    else{
+                        std::cout << "\n\t> The " << si.s << " station got its flow affected by " << si.i;
+                    }
                 }
+                std::cout << "\n\n";
                 break;
             }
 
@@ -177,13 +184,13 @@ int Menu::showMenu() {
     std::cout << "\n\n";
     std::cout << "\t-------------------------- MAIN MENU ---------------------------\n";
     std::cout << "\t[0] Finish execution and quit\n";
-    std::cout << "\t[1] Maximum number of trains that can travel between two stations DONE \n";
-    std::cout << "\t[2] Pairs of stations that handle the most trains (takes ~ 30s) DONE \n";
-    std::cout << "\t[3] Top-k districts or municipalities to invest more DONE?\n";
-    std::cout << "\t[4] Maximum number of trains in a stations at the time DONE\n";
+    std::cout << "\t[1] Maximum number of trains that can travel between two stations \n";
+    std::cout << "\t[2] Pairs of stations that handle the most trains (takes ~ 30s) \n";
+    std::cout << "\t[3] Top-k districts or municipalities to invest more\n";
+    std::cout << "\t[4] Maximum number of trains in a stations at the time\n";
     std::cout << "\t[5] Travel trains simultaneously with minimum company's cost WRONG\n";
-    std::cout << "\t[6] Max travel trains simultaneously with reduced connectivity DONE?\n";
-    std::cout << "\t[7] Top K most affected stations by each segment failure WRONG\n";
+    std::cout << "\t[6] Max travel trains simultaneously with reduced connectivity\n";
+    std::cout << "\t[7] Top-k most affected stations by each segment failure\n";
     std::cout << "\t----------------------------------------------------------------\n\n";
 
     std::cout << "\t> Enter your choice: ";
