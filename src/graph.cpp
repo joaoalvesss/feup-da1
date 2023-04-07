@@ -178,7 +178,7 @@ bool Graph::findAugmentingPath(Vertex * source, Vertex * dest){
 }
 
 
-std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // O(V^3 * E^2)
+std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMostTrainsRequired(){ // 2.2 Topic
     int most_trains_required = 0;
     int trains_num = -1;
     std::vector<std::pair<std::pair<std::string, std::string>, int>> stations;
@@ -209,7 +209,7 @@ std::vector<std::pair<std::pair<std::string, std::string>, int>> Graph::findMost
     return stations;
 }
 
-int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
+int Graph::findMaxStationTrains(const std::string &station) { // 2.4 Topic
     std::vector<Vertex *> sources;
 
     for (Vertex * &v: vertexSet) {
@@ -238,13 +238,7 @@ int Graph::findMaxStationTrains(const std::string &station) { // SIUUUUUUUUUUUUU
     return maxFlow;
 }
 
-struct CompareVertexPointers {
-    bool operator() (Vertex *v1, Vertex *v2) const {
-        return v1->getDist() > v2->getDist();
-    }
-};
-
-std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1, O(V^2 * E^3 * log V)
+std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const std::string& tgt) { // 3.1 Topic
     double cost = 0;
     Vertex *source = findVertex(src);
     Vertex *sink = findVertex(tgt);
@@ -296,7 +290,7 @@ std::pair<double, double> Graph::maxTrainsMinCost(const std::string& src, const 
     return {cost, (double)(edmondsKarp(src, tgt))};
 }
 
-bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) { // O(1)
+bool Graph::askForRemovedEdge(std::string &src, std::string &tgt) { // 4.1/2 Topic
     std::string q;
     std::cout << "\t> Do you want to remove another network? Y/n: ";
     std::cin >> std::ws;
@@ -396,7 +390,7 @@ std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
     return res;
 }
 
-std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerDistrict() {
+std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerDistrict() { // 2.3 Topic
     std::unordered_map<std::string, double> districtFlowMap;
 
     for (auto vertex : vertexSet) {
@@ -405,9 +399,8 @@ std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerDistrict() {
             districtFlowMap[district] = 0;
         }
         for (auto edge : vertex->getAdj()) {
-            if(vertex->getDistrict() == edge->getDest()->getDistrict()){
-                districtFlowMap[district] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
-            }
+            districtFlowMap[district] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
+
         }
     }
     std::vector<std::pair<std::string, double>> districtFlowVec(districtFlowMap.begin(), districtFlowMap.end());
@@ -416,7 +409,7 @@ std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerDistrict() {
     return districtFlowVec;
 }
 
-std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerMunicipality(){
+std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerMunicipality(){ // 2.3 Topic
     std::unordered_map<std::string, double> municipalityFlowMap;
 
     for (auto vertex : vertexSet) {
@@ -425,9 +418,8 @@ std::vector<std::pair<std::string, double>> Graph::getMaxFlowPerMunicipality(){
             municipalityFlowMap[municipality] = 0;
         }
         for (auto edge : vertex->getAdj()) {
-            if(vertex->getMunicipality() == edge->getDest()->getMunicipality()){
-                municipalityFlowMap[municipality] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
-            }
+            municipalityFlowMap[municipality] += edmondsKarp(vertex->getName(), edge->getDest()->getName());
+
         }
     }
     std::vector<std::pair<std::string, double>> municipalityFlowVec(municipalityFlowMap.begin(), municipalityFlowMap.end());

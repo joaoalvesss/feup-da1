@@ -87,7 +87,12 @@ void Menu::init() {
                 std::cout << "\n\t> The top-k " << helper << " to invest in:\n\n";
                 if(district && (k > 18)) k = 18;
                 else if(!district && (k > 136)) k = 136;
-                for(int i = 0; i < k; i++){ cout << "\t> " << i+1 << "o " << aux[i].first << " with " << aux[i].second << " flow\n";  }
+                for(int i = 0; i < k; i++){
+                    if(!aux[i].first.empty()){
+                        cout << "\t> " << i+1 << "o " << aux[i].first << " \n";
+                    }
+                    else continue;
+                }
                 break;
             }
             case 4:
@@ -184,11 +189,11 @@ int Menu::showMenu() {
     std::cout << "\n\n";
     std::cout << "\t-------------------------- MAIN MENU ---------------------------\n";
     std::cout << "\t[0] Finish execution and quit\n";
-    std::cout << "\t[1] Maximum number of trains that can travel between two stations \n";
-    std::cout << "\t[2] Pairs of stations that handle the most trains (takes ~ 30s) \n";
+    std::cout << "\t[1] Maximum number of trains that can travel between two stations\n";
+    std::cout << "\t[2] Pairs of stations that handle the most trains (takes ~ 30s)\n";
     std::cout << "\t[3] Top-k districts or municipalities to invest more\n";
     std::cout << "\t[4] Maximum number of trains in a stations at the time\n";
-    std::cout << "\t[5] Travel trains simultaneously with minimum company's cost WRONG\n";
+    std::cout << "\t[5] Travel trains simultaneously with minimum company's cost\n";
     std::cout << "\t[6] Max travel trains simultaneously with reduced connectivity\n";
     std::cout << "\t[7] Top-k most affected stations by each segment failure\n";
     std::cout << "\t----------------------------------------------------------------\n\n";
