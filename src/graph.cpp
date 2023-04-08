@@ -319,12 +319,11 @@ int Graph::reducedConnectivity(const std::string &source, const std::string &des
         Vertex * v2 = findVertex(remove_tgt);
         Edge * e1 = v1->removeEdge(v2->getId());
         Edge * e2 = v2->removeEdge(v1->getId());
-        put_back.push_back(e1);
-        put_back.push_back(e2);
+        if (e1 != nullptr) put_back.push_back(e1);
+        if (e2 != nullptr) put_back.push_back(e2);
     }
     int res = edmondsKarp(source, dest);
-
-    for (auto e : put_back) e->getOrig()->addEdge(e->getDest(), e->getCapacity(), *(e->getServiceType()), e->getWeight());
+    for (auto e : put_back) { e->getOrig()->addEdge(e->getDest(), e->getCapacity(), *e->getServiceType(), e->getWeight()) ;}
 
     if (res == -2) return 0;
     return res;
@@ -348,8 +347,8 @@ std::vector<StringInt> Graph::topKMostAffected(int k, int q) { // 4.2 topic
         Vertex *v2 = findVertex(remove_tgt);
         Edge * e1 = v1->removeEdge(v2->getId());
         Edge * e2 = v2->removeEdge(v1->getId());
-        put_back.push_back(e1);
-        put_back.push_back(e2);
+        if (e1 != nullptr) put_back.push_back(e1);
+        if (e2 != nullptr) put_back.push_back(e2);
     }
 
     std::vector<StringInt> post;

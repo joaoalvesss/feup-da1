@@ -24,11 +24,13 @@ Edge * Vertex::removeEdge(int destID) {
     bool removedEdge = false;
     auto it = adj.begin();
     Edge *res;
+    bool found = false;
     while (it != adj.end()) {
         Edge *edge = *it;
         Vertex *dest = edge->getDest();
         if (dest->getId() == destID) {
-            res = *it;
+            res = new Edge((*it)->getOrig(), (*it)->getDest(), (*it)->getCapacity(), *(*it)->getServiceType(), (*it)->getWeight());
+            found = true;
             it = adj.erase(it);
             // Also remove the corresponding edge from the incoming list
             auto it2 = dest->incoming.begin();
@@ -47,6 +49,7 @@ Edge * Vertex::removeEdge(int destID) {
             it++;
         }
     }
+    if (!found) return nullptr;
     return res;
 }
 
